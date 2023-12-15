@@ -1,13 +1,10 @@
 package main
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
-)
 
-func TestGetFileString(t *testing.T) {
-	assert.Equal(t, "1abc2\npqr3stu8vwx\na1b2c3d4e5f\ntreb7uchet", getFileString("test1.txt"))
-}
+	"github.com/stretchr/testify/assert"
+)
 
 func TestSolveOne(t *testing.T) {
 	assert.Equal(t, 142, solveOne("test1.txt"))

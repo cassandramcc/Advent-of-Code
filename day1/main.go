@@ -62,7 +62,7 @@ func convertDigitString(digit string) int {
 }
 
 func findDigits(line string) int {
-	digitStrings := []string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
+	digitStrings := []string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
 
 	firstIndex := math.MaxInt
 	lastIndex := -math.MaxInt
@@ -82,21 +82,6 @@ func findDigits(line string) int {
 		if lastIdx != -1 && lastIdx > lastIndex {
 			lastIndex = lastIdx
 			lastDigit = digit
-		}
-	}
-
-	// Find the int based digits and check if the first one is before the first text based digit,
-	// and if the last one is after the last text based digit
-	digit := regexp.MustCompile(`\d`)
-	digits := digit.FindAllString(line, -1)
-
-	if len(digits) >= 1 {
-		if strings.Index(line, digits[0]) < firstIndex {
-			firstDigit = digits[0]
-		}
-
-		if strings.Index(line, digits[len(digits)-1]) > lastIndex {
-			lastDigit = digits[len(digits)-1]
 		}
 	}
 
