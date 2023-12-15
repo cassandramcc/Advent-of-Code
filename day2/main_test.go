@@ -7,5 +7,9 @@ import (
 )
 
 func TestSolveOne(t *testing.T) {
-	assert.Equal(t, 8, solveOne("inputs/test1.txt"))
+	assert.Equal(t, 8, solveOne("inputs/test.txt"))
+}
+
+func TestSolveTwo(t *testing.T) {
+	assert.Equal(t, 2286, solveTwo("inputs/test.txt"))
 }

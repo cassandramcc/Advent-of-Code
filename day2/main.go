@@ -10,7 +10,7 @@ import (
 
 func main() {
 	args := os.Args[1:]
-	fmt.Println(solveOne(args[0]))
+	fmt.Println(solveTwo(args[0]))
 }
 
 func getFileString(file string) string {
@@ -75,4 +75,52 @@ func solveOne(file string) int {
 
 	return total
 
+}
+
+func solveTwo(file string) int {
+	data := getFileString(file)
+	// split the file into lines
+	lines := strings.Split(data, "\n")
+
+	var total int
+
+	for _, line := range lines {
+
+		blueRegex := regexp.MustCompile(`(\d+) blue`)
+		redRegex := regexp.MustCompile(`(\d+) red`)
+		greenRegex := regexp.MustCompile(`(\d+) green`)
+
+		blues := blueRegex.FindAllStringSubmatch(line, -1)
+		reds := redRegex.FindAllStringSubmatch(line, -1)
+		greens := greenRegex.FindAllStringSubmatch(line, -1)
+
+		maxRed := 0
+		maxGreen := 0
+		maxBlue := 0
+
+		for _, blue := range blues {
+			blueInt, _ := strconv.Atoi(blue[1])
+			if blueInt > maxBlue {
+				maxBlue = blueInt
+			}
+		}
+
+		for _, red := range reds {
+			redInt, _ := strconv.Atoi(red[1])
+			if redInt > maxRed {
+				maxRed = redInt
+			}
+		}
+
+		for _, green := range greens {
+			greenInt, _ := strconv.Atoi(green[1])
+			if greenInt > maxGreen {
+				maxGreen = greenInt
+			}
+		}
+
+		total = total + maxBlue*maxGreen*maxRed
+	}
+
+	return total
 }
