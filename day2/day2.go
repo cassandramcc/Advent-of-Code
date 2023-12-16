@@ -1,26 +1,13 @@
 package day2
 
 import (
-	"fmt"
-	"os"
+	"advent-of-code/common"
 	"regexp"
 	"strconv"
-	"strings"
 )
 
-func getFileString(file string) string {
-	data, err := os.ReadFile(file)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	return string(data)
-}
-
 func SolveOne(file string) int {
-	data := getFileString(file)
-	// split the file into lines
-	lines := strings.Split(data, "\n")
+	lines := common.GetFileLines(file)
 
 	var total int
 
@@ -73,9 +60,7 @@ func SolveOne(file string) int {
 }
 
 func SolveTwo(file string) int {
-	data := getFileString(file)
-	// split the file into lines
-	lines := strings.Split(data, "\n")
+	lines := common.GetFileLines(file)
 
 	var total int
 

@@ -1,41 +1,21 @@
 package day3
 
 import (
-	"fmt"
-	"os"
+	"advent-of-code/common"
 	"regexp"
 	"strconv"
-	"strings"
 )
 
-func getFileString(file string) string {
-	data, err := os.ReadFile(file)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	return string(data)
-}
-
-func SolveOne(file string) int {
-	data := getFileString(file)
-
-	return findTotal(data)
-
-}
-
 func SolveTwo(file string) int {
-	data := getFileString(file)
-	lines := strings.Split(data, "\n")
+	lines := common.GetFileLines(file)
 	stars := findStars(lines)
 	numbers := findNumbers(lines)
 	gears := findGears(stars, numbers)
 	return calculateTotal(gears, lines)
 }
 
-func findTotal(data string) int {
-	lines := strings.Split(data, "\n")
-
+func SolveOne(file string) int {
+	lines := common.GetFileLines(file)
 	var total int
 
 	numbersRegex := regexp.MustCompile(`\d+`)
