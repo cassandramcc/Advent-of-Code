@@ -10,7 +10,7 @@ import (
 
 func main() {
 	args := os.Args[1:]
-	fmt.Println(runOne(args[0]))
+	fmt.Println(runTwo(args[0]))
 }
 
 func getFileString(file string) string {
@@ -27,6 +27,15 @@ func runOne(file string) int {
 
 	return findTotal(data)
 
+}
+
+func runTwo(file string) int {
+	data := getFileString(file)
+	lines := strings.Split(data, "\n")
+	stars := findStars(lines)
+	numbers := findNumbers(lines)
+	gears := findGears(stars, numbers)
+	return calculateTotal(gears, lines)
 }
 
 func findTotal(data string) int {
@@ -54,7 +63,7 @@ func findTotal(data string) int {
 			symbolsDown = symbolsRegex.FindAllStringIndex(lines[i+1], -1)
 		}
 
-		engineNumbers := findEngineNumbers(numbers, symbolsUp, symbolsDown, symbolsSame, line)
+		engineNumbers := findEngineNumbersOne(numbers, symbolsUp, symbolsDown, symbolsSame, line)
 		for _, e := range engineNumbers {
 			total += e
 		}
@@ -64,7 +73,7 @@ func findTotal(data string) int {
 	return total
 }
 
-func findEngineNumbers(numbers, symbolsUp, symbolsDown, symbolsSame [][]int, line string) []int {
+func findEngineNumbersOne(numbers, symbolsUp, symbolsDown, symbolsSame [][]int, line string) []int {
 	var engineNumbers []int
 	for _, num := range numbers {
 		isEngineNumber := false
@@ -99,4 +108,66 @@ func findEngineNumbers(numbers, symbolsUp, symbolsDown, symbolsSame [][]int, lin
 		}
 	}
 	return engineNumbers
+}
+
+type number struct {
+	x []int
+	y int
+}
+
+func findStars(lines []string) [][]int {
+	var stars [][]int
+	starRegex := regexp.MustCompile(`\*`)
+	for i, line := range lines {
+		starIndexes := starRegex.FindAllStringIndex(line, -1)
+		for _, starIndex := range starIndexes {
+			stars = append(stars, []int{starIndex[0], i})
+		}
+	}
+	return stars
+}
+
+func findNumbers(lines []string) []number {
+	var numbers []number
+	numbersRegex := regexp.MustCompile(`\d+`)
+	for i, line := range lines {
+		numberIndexes := numbersRegex.FindAllStringIndex(line, -1)
+		for _, numberIndex := range numberIndexes {
+			numbers = append(numbers, number{numberIndex, i})
+		}
+	}
+	return numbers
+}
+
+func isAdjacent(star []int, num number) bool {
+	return star[0] >= num.x[0]-1 && star[0] <= num.x[1] && (star[1] == num.y || star[1] == num.y+1 || star[1] == num.y-1)
+}
+
+func findGears(stars [][]int, numbers []number) [][]number {
+	var gears [][]number
+
+	for _, star := range stars {
+		var adjacentNumbers []number
+		for _, num := range numbers {
+			if isAdjacent(star, num) {
+				adjacentNumbers = append(adjacentNumbers, num)
+			}
+		}
+		if len(adjacentNumbers) == 2 {
+			gears = append(gears, adjacentNumbers)
+		}
+	}
+
+	return gears
+}
+
+func calculateTotal(gears [][]number, lines []string) int {
+	var total int
+
+	for _, gear := range gears {
+		gear1, _ := strconv.Atoi(lines[gear[0].y][gear[0].x[0]:gear[0].x[1]])
+		gear2, _ := strconv.Atoi(lines[gear[1].y][gear[1].x[0]:gear[1].x[1]])
+		total = total + (gear1 * gear2)
+	}
+	return total
 }
