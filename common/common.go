@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -27,4 +28,36 @@ func ConvertToIntSlice(ss []string) []int {
 		result = append(result, i)
 	}
 	return result
+}
+
+func RemoveDuplicates(s []string) []string {
+	inResult := make(map[string]bool)
+	var result []string
+	for _, str := range s {
+		if _, ok := inResult[str]; !ok {
+			inResult[str] = true
+			result = append(result, str)
+		}
+	}
+	return result
+}
+
+func CountInstances(ss []string) map[string]int {
+	instancesMap := make(map[string]int)
+	unduped := RemoveDuplicates(ss)
+	for _, item := range ss {
+		if slices.Contains(unduped, item) {
+			instancesMap[item] += 1
+		}
+	}
+	return instancesMap
+}
+
+func MapContains(m map[string]int, i int) bool {
+	for _, v := range m {
+		if v == i {
+			return true
+		}
+	}
+	return false
 }
