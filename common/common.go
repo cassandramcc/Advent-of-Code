@@ -61,3 +61,11 @@ func MapContains(m map[string]int, i int) bool {
 	}
 	return false
 }
+
+func MapFunc(ss []string, f func(s string) string) []string {
+	var mappedSlice []string
+	for _, s := range ss {
+		mappedSlice = append(mappedSlice, f(s))
+	}
+	return mappedSlice
+}

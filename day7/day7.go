@@ -2,8 +2,8 @@ package day7
 
 import (
 	"advent-of-code/common"
-	"fmt"
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 )
@@ -32,6 +32,24 @@ func convertCardToValue(card string) int {
 	}
 }
 
+func convertCardToValueJoker(card string) int {
+	switch card {
+	case "A":
+		return 14
+	case "K":
+		return 13
+	case "Q":
+		return 12
+	case "J":
+		return 1
+	case "T":
+		return 10
+	default:
+		i, _ := strconv.Atoi(card)
+		return i
+	}
+}
+
 func SolveOne(file string) int {
 	lines := common.GetFileLines(file)
 	hands := getHands(lines)
@@ -39,8 +57,39 @@ func SolveOne(file string) int {
 		handType := findHandType(hand.cards)
 		hand.handType = handType
 	}
-	orderHands(hands)
-	printHands(hands)
+	sort.Slice(hands, func(i, j int) bool {
+		if hands[i].handType != hands[j].handType {
+			return hands[i].handType < hands[j].handType
+		}
+		for k := range hands[i].cards {
+			if hands[i].cards[k] != hands[j].cards[k] {
+				return convertCardToValue(hands[i].cards[k]) < convertCardToValue(hands[j].cards[k])
+			}
+		}
+		return false
+	})
+	return calculateTotalWinnings(hands)
+}
+
+func SolveTwo(file string) int {
+	lines := common.GetFileLines(file)
+	hands := getHands(lines)
+	for _, hand := range hands {
+		hand.handType = findHandType(hand.cards)
+		considerJokers(hand)
+	}
+
+	sort.Slice(hands, func(i, j int) bool {
+		if hands[i].handType != hands[j].handType {
+			return hands[i].handType < hands[j].handType
+		}
+		for k := range hands[i].cards {
+			if hands[i].cards[k] != hands[j].cards[k] {
+				return convertCardToValueJoker(hands[i].cards[k]) < convertCardToValueJoker(hands[j].cards[k])
+			}
+		}
+		return false
+	})
 	return calculateTotalWinnings(hands)
 }
 
@@ -91,19 +140,39 @@ func findHandType(hand []string) int {
 	return 1
 }
 
-func orderHands(hands []*hand) {
-	// Sort the hands by their hand type
-	sort.Slice(hands, func(i, j int) bool {
-		if hands[i].handType != hands[j].handType {
-			return hands[i].handType < hands[j].handType
+// Must check that hand has jokers in it
+func considerJokers(hand *hand) {
+	if !slices.Contains(hand.cards, "J") {
+		return
+	}
+	instances := common.CountInstances(hand.cards)
+	// Four of a kind and full house becomes five of a kind
+	if hand.handType == 6 || hand.handType == 5 {
+		hand.handType = 7
+
+		// three of a kind becomes four of a kind
+	} else if hand.handType == 4 {
+		hand.handType = 6
+
+		// two pair
+	} else if hand.handType == 3 {
+		if instances["J"] == 2 {
+			// becomes four of a kind
+			hand.handType = 6
+
+			// becomes full house
+		} else if instances["J"] == 1 {
+			hand.handType = 5
 		}
-		for k := range hands[i].cards {
-			if hands[i].cards[k] != hands[j].cards[k] {
-				return convertCardToValue(hands[i].cards[k]) < convertCardToValue(hands[j].cards[k])
-			}
-		}
-		return false
-	})
+
+		// one pair becomes three of a kind
+	} else if hand.handType == 2 {
+		hand.handType = 4
+
+		// high card becomes one pair
+	} else if hand.handType == 1 {
+		hand.handType = 2
+	}
 }
 
 func calculateTotalWinnings(hands []*hand) int {
@@ -112,10 +181,4 @@ func calculateTotalWinnings(hands []*hand) int {
 		total += h.bid * (i + 1)
 	}
 	return total
-}
-
-func printHands(hands []*hand) {
-	for _, h := range hands {
-		fmt.Printf("%+v\n", h)
-	}
 }

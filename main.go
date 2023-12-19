@@ -75,7 +75,7 @@ func main() {
 		if part == "1" {
 			fmt.Println(day7.SolveOne("day7/" + inputFile))
 		} else if part == "2" {
-			//fmt.Println(day7.SolveTwo())
+			fmt.Println(day7.SolveTwo("day7/" + inputFile))
 		}
 	default:
 		fmt.Println("No day for", day)
