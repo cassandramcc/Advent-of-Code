@@ -14,7 +14,7 @@ type hand struct {
 	handType int
 }
 
-func convertCardToValue(card string) int {
+func convertCardToValue(card string, joker bool) int {
 	switch card {
 	case "A":
 		return 14
@@ -23,25 +23,10 @@ func convertCardToValue(card string) int {
 	case "Q":
 		return 12
 	case "J":
+		if joker {
+			return 1
+		}
 		return 11
-	case "T":
-		return 10
-	default:
-		i, _ := strconv.Atoi(card)
-		return i
-	}
-}
-
-func convertCardToValueJoker(card string) int {
-	switch card {
-	case "A":
-		return 14
-	case "K":
-		return 13
-	case "Q":
-		return 12
-	case "J":
-		return 1
 	case "T":
 		return 10
 	default:
@@ -54,20 +39,9 @@ func SolveOne(file string) int {
 	lines := common.GetFileLines(file)
 	hands := getHands(lines)
 	for _, hand := range hands {
-		handType := findHandType(hand.cards)
-		hand.handType = handType
+		hand.handType = findHandType(hand.cards)
 	}
-	sort.Slice(hands, func(i, j int) bool {
-		if hands[i].handType != hands[j].handType {
-			return hands[i].handType < hands[j].handType
-		}
-		for k := range hands[i].cards {
-			if hands[i].cards[k] != hands[j].cards[k] {
-				return convertCardToValue(hands[i].cards[k]) < convertCardToValue(hands[j].cards[k])
-			}
-		}
-		return false
-	})
+	sortHands(hands, false)
 	return calculateTotalWinnings(hands)
 }
 
@@ -78,18 +52,7 @@ func SolveTwo(file string) int {
 		hand.handType = findHandType(hand.cards)
 		considerJokers(hand)
 	}
-
-	sort.Slice(hands, func(i, j int) bool {
-		if hands[i].handType != hands[j].handType {
-			return hands[i].handType < hands[j].handType
-		}
-		for k := range hands[i].cards {
-			if hands[i].cards[k] != hands[j].cards[k] {
-				return convertCardToValueJoker(hands[i].cards[k]) < convertCardToValueJoker(hands[j].cards[k])
-			}
-		}
-		return false
-	})
+	sortHands(hands, true)
 	return calculateTotalWinnings(hands)
 }
 
@@ -138,6 +101,20 @@ func findHandType(hand []string) int {
 	}
 	// High card
 	return 1
+}
+
+func sortHands(hands []*hand, joker bool) {
+	sort.Slice(hands, func(i, j int) bool {
+		if hands[i].handType != hands[j].handType {
+			return hands[i].handType < hands[j].handType
+		}
+		for k := range hands[i].cards {
+			if hands[i].cards[k] != hands[j].cards[k] {
+				return convertCardToValue(hands[i].cards[k], joker) < convertCardToValue(hands[j].cards[k], joker)
+			}
+		}
+		return false
+	})
 }
 
 // Must check that hand has jokers in it
