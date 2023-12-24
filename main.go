@@ -9,6 +9,7 @@ import (
 	"advent-of-code/day6"
 	"advent-of-code/day7"
 	"advent-of-code/day8"
+	"advent-of-code/day9"
 	"fmt"
 	"os"
 )
@@ -84,6 +85,13 @@ func main() {
 			fmt.Println(day8.SolveOne("day8/" + inputFile))
 		} else if part == "2" {
 			fmt.Println(day8.SolveTwo("day8/" + inputFile))
+		}
+
+	case "9":
+		if part == "1" {
+			fmt.Println(day9.SolveOne("day9/" + inputFile))
+		} else if part == "2" {
+			fmt.Println(day9.SolveTwo("day9/" + inputFile))
 		}
 	default:
 		fmt.Println("No day for", day)
