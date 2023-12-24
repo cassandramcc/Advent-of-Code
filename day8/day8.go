@@ -2,7 +2,6 @@ package day8
 
 import (
 	"advent-of-code/common"
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -36,19 +35,9 @@ func SolveTwo(file string) int {
 	network, instructions := getNetwork(lines)
 	currentNodes := findStartNodes(network)
 
-	var stepChans []chan int
-	for _ = range currentNodes {
-		stepChans = append(stepChans, make(chan int))
-	}
-
-	for i, node := range currentNodes {
-		go followNodes(node, network, instructions, stepChans[i])
-	}
-
 	var recSteps []int
-	for _, ch := range stepChans {
-		recSteps = append(recSteps, <-ch)
-		fmt.Println(recSteps)
+	for _, node := range currentNodes {
+		recSteps = append(recSteps, followNodes(node, network, instructions))
 	}
 
 	return lcmm(recSteps)
@@ -81,16 +70,6 @@ func findStartNodes(nodes map[string]nodes) []string {
 	return startNodes
 }
 
-func isEndState(steps []int, startNodes []string) (bool, int) {
-	instances := common.CountInstances(steps)
-	for k, v := range instances {
-		if v == len(startNodes) {
-			return true, k
-		}
-	}
-	return false, -1
-}
-
 func isEndNode(currentNodes []string) bool {
 	for _, node := range currentNodes {
 		if node[2] != 'Z' {
@@ -100,14 +79,13 @@ func isEndNode(currentNodes []string) bool {
 	return true
 }
 
-func followNodes(startNode string, network map[string]nodes, instructions []string, stepChan chan<- int) {
+func followNodes(startNode string, network map[string]nodes, instructions []string) int {
 	var steps int
 	currentNode := startNode
 	for true {
 		for _, i := range instructions {
 			if isEndNode([]string{currentNode}) {
-				stepChan <- steps
-				return
+				return steps
 			}
 			nextNodes := network[currentNode]
 			nextNode := getNextLocation(nextNodes, i)
@@ -115,6 +93,7 @@ func followNodes(startNode string, network map[string]nodes, instructions []stri
 			currentNode = nextNode
 		}
 	}
+	return -1
 }
 
 // gcd calculates the greatest common divisor using the Euclidean algorithm.
