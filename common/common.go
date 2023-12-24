@@ -30,9 +30,9 @@ func ConvertToIntSlice(ss []string) []int {
 	return result
 }
 
-func RemoveDuplicates(s []string) []string {
-	inResult := make(map[string]bool)
-	var result []string
+func RemoveDuplicates[T comparable](s []T) []T {
+	inResult := make(map[T]bool)
+	var result []T
 	for _, str := range s {
 		if _, ok := inResult[str]; !ok {
 			inResult[str] = true
@@ -42,8 +42,8 @@ func RemoveDuplicates(s []string) []string {
 	return result
 }
 
-func CountInstances(ss []string) map[string]int {
-	instancesMap := make(map[string]int)
+func CountInstances[T comparable](ss []T) map[T]int {
+	instancesMap := make(map[T]int)
 	unduped := RemoveDuplicates(ss)
 	for _, item := range ss {
 		if slices.Contains(unduped, item) {
