@@ -2,7 +2,6 @@ package day5
 
 import (
 	"advent-of-code/common"
-	"fmt"
 	"regexp"
 	"slices"
 	"strings"
@@ -16,58 +15,37 @@ func SolveOne(file string) int {
 	return findLowestLocation(seeds, maps)
 }
 
+func findPossibleLocations(ranges [][]int, s string, maps [][][]int) []int {
+	var possibleLocations []int
+	for _, r := range ranges {
+		// r[0] is the GODDAMN DESTINATION
+		// i.e. in a seed to soil map, r[0] IS THE GODDAMN SOIL
+		possibleLocations = append(possibleLocations, findLocationForSeed(r[0], maps))
+	}
+
+	return possibleLocations
+}
+
 func SolveTwo(file string) int {
 	data := common.GetFileText(file)
 	seedRanges := getSeedRanges(data)
-	maps := getMaps(file) // soils, fertilizer, water, light, temp, humidity, location
+	maps := getMaps(file) // seed to soil, soil to fertilizer, fertilizer to water, water to light, light to temp, temp to humidity, humidity to location
 
 	var possibleLocations []int
-	for _, soils := range maps[1] {
-		possibleLocations = append(possibleLocations, findLocationForSeed(soils[0], maps))
-		fmt.Println("seed->", soils[0], "location", findLocationForSeed(soils[0], maps))
-		possibleLocations = append(possibleLocations, findLocationForSeed(soils[1], maps[1:]))
-		fmt.Println("soil->", soils[1], "location", findLocationForSeed(soils[1], maps[1:]))
-	}
-
-	for _, fertilizer := range maps[2] {
-		possibleLocations = append(possibleLocations, findLocationForSeed(fertilizer[1], maps[2:]))
-		fmt.Println("fertilizer->", fertilizer[1], "location", findLocationForSeed(fertilizer[1], maps[2:]))
-	}
-
-	for _, water := range maps[3] {
-		possibleLocations = append(possibleLocations, findLocationForSeed(water[1], maps[3:]))
-		fmt.Println("water->", water[1], "location", findLocationForSeed(water[1], maps[3:]))
-	}
-
-	for _, light := range maps[4] {
-		possibleLocations = append(possibleLocations, findLocationForSeed(light[1], maps[4:]))
-		fmt.Println("light->", light[1], "location", findLocationForSeed(light[1], maps[4:]))
-	}
-
-	for _, temp := range maps[5] {
-		possibleLocations = append(possibleLocations, findLocationForSeed(temp[1], maps[5:]))
-		fmt.Println("temp->", temp[1], "location", findLocationForSeed(temp[1], maps[5:]))
-	}
-
-	for _, humid := range maps[6] {
-		possibleLocations = append(possibleLocations, findLocationForSeed(humid[1], maps[6:]))
-		fmt.Println("humidity->", humid[1], "location", findLocationForSeed(humid[1], maps[6:]))
-	}
-
-	for _, loc := range maps[6] {
-		possibleLocations = append(possibleLocations, loc[1])
-		fmt.Println("loc->", loc[1], "location", loc[1])
-	}
+	possibleLocations = append(possibleLocations, findPossibleLocations(maps[0], "soil", maps[1:])...)
+	possibleLocations = append(possibleLocations, findPossibleLocations(maps[1], "fertilizer", maps[2:])...)
+	possibleLocations = append(possibleLocations, findPossibleLocations(maps[2], "water", maps[3:])...)
+	possibleLocations = append(possibleLocations, findPossibleLocations(maps[3], "light", maps[4:])...)
+	possibleLocations = append(possibleLocations, findPossibleLocations(maps[4], "temp", maps[5:])...)
+	possibleLocations = append(possibleLocations, findPossibleLocations(maps[5], "humidity", maps[6:])...)
 
 	// loop through each location in order
 	slices.Sort(possibleLocations)
-	fmt.Println(possibleLocations)
 
 	// reverse the maps so a seed can be found for a location
 	slices.Reverse(maps)
 	for _, l := range possibleLocations {
 		seed := findSeedFromLocation(l, maps)
-		fmt.Println("location->", l, "seed", seed)
 		if isValidSeed(seed, seedRanges) {
 			return l
 		}
@@ -271,6 +249,7 @@ func findLocationForSeed(seed int, maps [][][]int) int {
 	dest := seed
 	for _, m := range maps {
 		dest = findDestFromSources(dest, m)
+		//fmt.Println(dest)
 	}
 	return dest
 }

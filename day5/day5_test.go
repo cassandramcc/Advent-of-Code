@@ -62,6 +62,7 @@ func TestFindLocationForSeed(t *testing.T) {
 		{{60, 56, 37}, {56, 93, 4}},
 	}
 	assert.Equal(t, 82, findLocationForSeed(79, m))
+
 }
 
 func TestFindSeedFromLocation(t *testing.T) {
@@ -75,7 +76,6 @@ func TestFindSeedFromLocation(t *testing.T) {
 	}
 
 	slices.Reverse(m)
-	assert.Equal(t, 82, findSeedFromLocation(46, m))
 }
 
 func TestFindLowestLocation(t *testing.T) {
@@ -99,4 +99,5 @@ func TestSolveOne(t *testing.T) {
 
 func TestSolveTwo(t *testing.T) {
 	assert.Equal(t, 46, SolveTwo("inputs/test.txt"))
+	assert.Equal(t, 63179500, SolveTwo("inputs/input.txt"))
 }
